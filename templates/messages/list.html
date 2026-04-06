@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Messages | Student Portal{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header bg-white"><strong>Inbox</strong></div>
+      <div class="card-body" id="inbox">
+        {% for m in messages %}
+        <div class="mb-3 border-bottom pb-2">
+          <div class="small text-muted">From: {{ m.sender.get_full_name|default:m.sender.username }} — {{ m.timestamp|date:'M d, H:i' }}</div>
+          <div class="fw-semibold">{{ m.subject|default:'(No subject)' }}</div>
+          <div>{{ m.body|linebreaksbr }}</div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No messages.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header bg-white"><strong>New Message</strong></div>
+      <div class="card-body">
+        <form id="msg-form" method="post" action="{% url 'messages:send' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">To</label>
+            <select class="form-select" name="to" required>
+              <option value="" disabled selected>Select a user</option>
+              {% for u in users %}
+              <option value="{{ u.id }}">{{ u.get_full_name|default:u.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input class="form-control" type="text" name="subject" placeholder="Subject" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" name="body" rows="4" required></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let lastId = null;
+async function poll() {
+  try {
+    const res = await fetch('{% url 'messages:poll' %}?'+(lastId?('last_id='+lastId):''), { headers: { 'x-requested-with': 'XMLHttpRequest' }});
+    const data = await res.json();
+    if (data.messages && data.messages.length) {
+      const inbox = document.getElementById('inbox');
+      data.messages.reverse().forEach(m => {
+        const wrap = document.createElement('div');
+        wrap.className = 'mb-3 border-bottom pb-2';
+        wrap.innerHTML = `<div class="small text-muted">From: ${m.from} — ${new Date(m.ts).toLocaleString()}</div>
+                          <div class="fw-semibold">${m.subject || '(No subject)'}</div>
+                          <div>${m.body.replace(/\n/g,'<br>')}</div>`;
+        inbox.prepend(wrap);
+        lastId = Math.max(lastId || 0, m.id);
+      });
+    }
+  } catch (e) {}
+  setTimeout(poll, 4000);
+}
+document.getElementById('msg-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'x-requested-with': 'XMLHttpRequest' }});
+  if (res.ok) { form.reset(); }
+});
+poll();
+</script>
+{% endblock %}
+
+
+

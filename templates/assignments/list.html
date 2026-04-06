@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Assignments | Student Portal{% endblock %}
+{% block page_title %}Upcoming Assignments{% endblock %}
+{% block content %}
+<div class="list-group">
+  {% for a in assignments %}
+  <a href="{% url 'assignments:detail' a.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    <span>
+      <strong>{{ a.title }}</strong>
+      <span class="text-muted">— {{ a.course.code }}</span>
+    </span>
+    <span class="badge bg-primary">{{ a.due_date|date:'M d, H:i' }}</span>
+  </a>
+  {% empty %}
+  <p class="text-muted">No assignments.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+

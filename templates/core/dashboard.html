@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Student Portal{% endblock %}
+{% block page_title %}Welcome back, {{ request.user.first_name|default:request.user.username }}!{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white">
+        <strong>Upcoming Assignments</strong>
+        <a href="{% url 'assignments:list' %}" class="float-end">View all</a>
+      </div>
+      <div class="card-body" id="upcoming-assignments">
+        {% with assignments=request.user.assignments.all|slice:":5" %}
+          {% if assignments %}
+            <div class="list-group">
+              {% for a in assignments %}
+                <a href="{% url 'assignments:detail' a.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <span><strong>{{ a.title }}</strong> <span class="text-muted">— {{ a.course.code }}</span></span>
+                  <span class="badge bg-primary">{{ a.due_date|date:'M d' }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted m-0">No assignments yet.</p>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <strong>Current Courses</strong>
+        <a href="{% url 'courses:list' %}" class="float-end">View all</a>
+      </div>
+      <div class="card-body" id="current-courses">
+        {% with courses=request.user.enrolled_courses.all %}
+          {% if courses %}
+            <ul class="list-group">
+              {% for c in courses %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ c.code }} — {{ c.name }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted m-0">No courses yet.</p>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white"><strong>Calendar</strong></div>
+      <div class="card-body">
+        <div id="calendar" class="border rounded p-3 text-muted">Calendar coming soon</div>
+      </div>
+    </div>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white"><strong>Account</strong></div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between"><span>Fee balance</span><strong>${{ request.user.fee_balance }}</strong></div>
+      </div>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-header bg-white"><strong>Announcements</strong></div>
+      <div class="card-body"><p class="m-0">Welcome to the Student Portal!</p></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

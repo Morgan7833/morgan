@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ assignment.title }} | Assignment{% endblock %}
+{% block page_title %}{{ assignment.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <p class="text-muted mb-2">Course: {{ assignment.course.code }}</p>
+    <p class="text-muted">Due: {{ assignment.due_date|date:'M d, Y H:i' }}</p>
+    <p>{{ assignment.description|linebreaks }}</p>
+    <span class="badge bg-secondary text-uppercase">{{ assignment.get_status_display }}</span>
+  </div>
+  <div class="card-footer bg-white">
+    <a class="btn btn-outline-secondary" href="{% url 'assignments:list' %}">Back</a>
+  </div>
+</div>
+{% endblock %}
+
+
+

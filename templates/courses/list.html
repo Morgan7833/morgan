@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Courses | Student Portal{% endblock %}
+{% block page_title %}Courses{% endblock %}
+{% block content %}
+<div class="row g-3">
+  {% for c in courses %}
+  <div class="col-md-6">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ c.code }} — {{ c.name }}</h5>
+        <p class="card-text">{{ c.description|default:"No description" }}</p>
+        {% if c.id in my_ids %}
+          <span class="badge bg-success">Enrolled</span>
+        {% else %}
+          <form method="post" class="mt-2">
+            {% csrf_token %}
+            <input type="hidden" name="course_id" value="{{ c.id }}" />
+            <button class="btn btn-primary btn-sm" type="submit">Enroll</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-muted">No courses available.</p>
+  {% endfor %}
+  </div>
+{% endblock %}
+
+

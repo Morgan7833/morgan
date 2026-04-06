@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Calendar | Student Portal{% endblock %}
+{% block page_title %}Calendar{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div id="calendar" class="border rounded p-3">Loading events…</div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const res = await fetch('', { headers: { 'x-requested-with': 'XMLHttpRequest' }});
+  const data = await res.json();
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+  if (!data.events.length) { cal.innerText = 'No events.'; return; }
+  const list = document.createElement('ul');
+  list.className = 'list-group';
+  data.events.sort((a,b)=>a.date.localeCompare(b.date)).forEach(e => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between';
+    const when = new Date(e.date);
+    const left = document.createElement('span');
+    left.textContent = e.title;
+    const right = document.createElement('span');
+    right.textContent = when.toLocaleString();
+    li.append(left, right);
+    if (e.url) { li.addEventListener('click', () => location.href = e.url); li.style.cursor = 'pointer'; }
+    list.appendChild(li);
+  });
+  cal.appendChild(list);
+});
+</script>
+{% endblock %}
+
+
+
