@@ -2,4 +2,4 @@
 2.Winny Oruko COM/083/24 0745878104
 3.Zeddycarol Oyugi COM/088/24 0796488109
 4.Morgan kiplagat COM/1005/24 0729394075
-5.Clinton Wafula COM/106/24 0740219124
+5.Clinton Wafula COM/106/24 019124
